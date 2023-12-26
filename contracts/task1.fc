@@ -1,6 +1,6 @@
 #include "imports/stdlib.fc";
 
-(int, int, slice, int) load_data () impure {
+(int, int, slice, int) load_data () inline {
   var ds = get_data().begin_parse();
   return (ds~load_uint(256), ds~load_uint(32), ds~load_msg_addr(), ds~load_uint(32));
 }
@@ -12,7 +12,8 @@
 () recv_external(slice ext_in_msg_body) impure {
   int op = ext_in_msg_body~load_int(32);
   int queryid = ext_in_msg_body~load_uint(64);
-  var (public_key, execution_time, receiver, seqno) = load_data();
+  var ds = get_data().begin_parse();
+  var (public_key, execution_time, receiver, seqno) = (ds~load_uint(256), ds~load_uint(32), ds~load_msg_addr(), ds~load_uint(32));
   if(op == 0x9df10277){
     var signature = ext_in_msg_body~load_bits(512);
     slice ref = ext_in_msg_body~load_ref().begin_parse();
