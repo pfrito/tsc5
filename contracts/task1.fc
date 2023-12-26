@@ -10,13 +10,13 @@
 }
 
 () recv_external(slice ext_in_msg_body) impure {
-  int ref_hash = slice_hash(ext_in_msg_body);
   int op = ext_in_msg_body~load_int(32);
   int queryid = ext_in_msg_body~load_uint(64);
   var (public_key, execution_time, receiver, seqno) = load_data();
   if(op == 0x9df10277){
     var signature = ext_in_msg_body~load_bits(512);
     slice ref = ext_in_msg_body~load_ref().begin_parse();
+    int ref_hash = slice_hash(ref);
     int locked_for = ref~load_uint(32);
     int new_seqno = ref~load_uint(32);
     throw_if(119, new_seqno != seqno + 1);
