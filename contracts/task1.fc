@@ -26,9 +26,9 @@
     throw_if(123, now() + locked_for < execution_time);
     accept_message();
     execution_time = now() + locked_for;
-    set_data(begin_cell().store_uint(public_key, 256).store_uint(execution_time, 32).store_slice(receiver).store_uint(new_seqno, 32).end_cell());
+    ;; set_data(begin_cell().store_uint(public_key, 256).store_uint(execution_time, 32).store_slice(receiver).store_uint(new_seqno, 32).end_cell());
   }
-  if(op == 0xbb4be234){
+  {- if(op == 0xbb4be234){
     throw_if(124, execution_time > now());
     accept_message();
     var msg = begin_cell()
@@ -38,12 +38,12 @@
         .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
       .end_cell();
     send_raw_message(msg, 128);
-  }
+  } -}
 }
 
 ;; Get methods
 
-int get_seqno() method_id {
+{- int get_seqno() method_id {
     var (public_key, execution_time, receiver, seqno) = load_data();
     return seqno;
 }
@@ -51,4 +51,4 @@ int get_seqno() method_id {
 int get_execution_time() method_id {
     var (public_key, execution_time, receiver, seqno) = load_data();
     return execution_time;
-}
+} -}
