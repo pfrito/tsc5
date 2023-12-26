@@ -1,9 +1,102 @@
 #include "imports/stdlib.fc";
 
+forall X -> (tuple) to_tuple (X x) asm "NOP";
+forall X -> tuple tpush(tuple t, X value) asm "TPUSH";
+forall X -> tuple set_index_var(tuple t, X value, int position) asm "SETINDEXVAR";
+
 () recv_internal(int my_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
 
 }
 
-(int, int, int, tuple) solve(int n, int m, tuple maze) method_id {
-    return (-1, 0, 0, null());
+(int, int, int, tuple) solve(int n, int m, tuple maze) method_id {   
+    ;; Tupla de adyacentes
+    tuple nf = to_tuple([-1, -1, -1, 0, 0, 1, 1, 1]);
+    tuple nc = to_tuple([-1, 0, 1, -1, 1, -1, 0, 1]);
+
+    ;; Penalizacion x celda
+    int a = 1;
+    int b = 962;
+    int c = 924483;
+    int worstCase = 888428164;
+
+    ;; Inicializar la matriz a modificar y la de ancestros 
+    tuple dp = empty_tuple();
+    tuple anc = empty_tuple();
+    int row = 0;
+    repeat(n){
+        dp~push(empty_tuple());
+        anc~push(empty_tuple());
+        repeat(m){
+            dp.at(row)~push(worstCase);
+            anc.at(row)~push(-1);
+            anc.at(row)~push(-1);
+        }
+        row = row + 1;
+    }
+    
+    ;; Buscar la posicion inicial y final
+    int x = y = fx = fy = 0;
+    row = 0;
+    while(row < n){
+        int col = 0;
+        while(col < m){
+            if(maze.at(row).at(col) == 83){
+                x = row;
+                y = col;
+            }
+            if(maze.at(row).at(col) == 69){
+                fx = row;
+                fy = col;
+            }
+            col = col + 1;
+        }
+        row = row + 1;
+    }
+
+    ;; Marcar la posicion inicial con valor 0
+    dp.at(x).set_index_var(0, y);
+
+    ;; Hacer el bellman-ford
+    repeat(n + m - 1){
+        ;; Me muevo por cada posicion de la matriz
+        row = 0;
+        while(row < n){
+            col = 0;
+            while(col < m){
+                ;; Intento moverme para todos los vecinos
+                int k = 0;
+                int valA = dp.at(row).at(col);
+                while(k < 8){
+                    int nrow = row + nf.at(k);
+                    int ncol = col + nc.at(k);
+                    if((nrow > 0) & (nrow < n) & (ncol > 0) & (ncol < m)){
+                        int valB = dp.at(row).at(col);
+                        int cost = 0;
+                        if(maze.at(nrow).at(ncol) == 46){
+                            cost = a;
+                        }
+                        elseif(maze.at(nrow).at(ncol) == 63){
+                            cost = b;
+                        }
+                        else{ cost = c; }
+                        if(valB > valA + cost){
+                            anc.at(nrow).at(ncol).set_index_var(row, 0);
+                            anc.at(nrow).at(ncol).set_index_var(col, 1);
+                            dp.at(nrow).set_index_var(valA + cost, ncol);
+                        }
+                    }
+                    k = k + 1;
+                }
+                col = col + 1;
+            }
+            row = row + 1;
+        }
+    }
+
+    if(dp.ar(fx).at(fy) == worstCase){
+        return (-1, 0, 0, null());
+    }
+    else{
+        return (-1, 0, 0, null());
+    }
 }
