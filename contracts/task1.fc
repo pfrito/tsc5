@@ -23,7 +23,7 @@
     throw_if(122, execution_time < now());
     throw_if(123, now() + locked_for < execution_time);
     execution_time = now() + locked_for;
-    set_data(begin_cell().store_uint(public_key, 256).store_uint(execution_time, 32).store_slice(receiver).store_uint(new_seqno, 32));
+    set_data(begin_cell().store_uint(public_key, 256).store_uint(execution_time, 32).store_slice(receiver).store_uint(new_seqno, 32).end_cell());
   }
   if(op == 0xbb4be234){
     throw_if(124, execution_time > now());
