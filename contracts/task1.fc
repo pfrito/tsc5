@@ -40,8 +40,8 @@
 ;; Get methods
 
 int get_seqno() method_id {
-  var ds = get_data().begin_parse();
-  const num =  ds~load_uint(32);
+  slice ds = get_data().begin_parse();
+  int num =  ds~load_uint(32);
   return ds~load_uint(32);
 }
 
