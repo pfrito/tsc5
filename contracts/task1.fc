@@ -10,7 +10,7 @@
 }
 
 () recv_external(slice ext_in_msg_body) impure {
-  var cs = ext_in_msg_body
+  var cs = ext_in_msg_body;
   cs~touch();
   int op = cs~load_uint(32);
   int queryid = cs~load_uint(64);
