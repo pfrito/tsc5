@@ -29,7 +29,7 @@ forall X -> (tuple, ()) ~set_val_at(tuple t, X value, int position) asm "SETINDE
         tuple ancNextRow = empty_tuple();
         repeat(m){
             dpNextRow~tpush(worstCase);
-            ancNextRow~tpush(to_tuple([-1,-1]));
+            ancNextRow~tpush(pair(-1,-1));
         }
         dp~tpush(dpNextRow);
         anc~tpush(ancNextRow);
