@@ -2,7 +2,8 @@
 
 forall X -> (tuple) to_tuple (X x) asm "NOP";
 forall X -> tuple tpush(tuple t, X value) asm "TPUSH";
-forall X -> tuple set_index_var(tuple t, X value, int position) asm "SETINDEXVAR";
+forall X -> tuple set_val_at(tuple t, X value, int position) asm "SETINDEXVAR";
+forall X -> (tuple, ()) ~set_val_at(tuple t, X value, int position) asm "SETINDEXVAR";
 
 () recv_internal(int my_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
 
@@ -21,17 +22,21 @@ forall X -> tuple set_index_var(tuple t, X value, int position) asm "SETINDEXVAR
 
     ;; Inicializar la matriz a modificar y la de ancestros 
     tuple dp = empty_tuple();
-    tuple anc = empty_tuple();
+    tuple ancX = empty_tuple();
+    tuple ancY = empty_tuple();
     int row = 0;
     repeat(n){
         tuple dpNextRow = empty_tuple();
-        tuple ancNextRow = empty_tuple();
+        tuple ancNextRowX = empty_tuple();
+        tuple ancNextRowY = empty_tuple();
         repeat(m){
             dpNextRow~tpush(worstCase);
-            tpush(ancNextRow, pair(-1, -1));
+            ancNextRowX~tpush(-1);
+            ancNextRowY~tpush(-1);
         }
         dp~tpush(dpNextRow);
-        anc~tpush(ancNextRow);
+        ancX~tpush(ancNextRowX);
+        ancY~tpush(ancNextRowY);
         row = row + 1;
     }
     
@@ -58,7 +63,7 @@ forall X -> tuple set_index_var(tuple t, X value, int position) asm "SETINDEXVAR
     }
 
     ;; Marcar la posicion inicial con valor 0
-    dp.at(x).set_index_var(0, y);
+    dp~set_val_at(dp.at(x).set_val_at(0, y), x);
 
     ;; Hacer el bellman-ford
     repeat(n * m){
@@ -83,9 +88,9 @@ forall X -> tuple set_index_var(tuple t, X value, int position) asm "SETINDEXVAR
                             }
                             
                             if(valB > valA + cost){
-                                anc.at(nrow).at(ncol).set_index_var(row, 0);
-                                anc.at(nrow).at(ncol).set_index_var(col, 1);
-                                dp.at(nrow).set_index_var(valA + cost, ncol);
+                                ancX~set_val_at(ancX.at(nrow).set_val_at(row, ncol), nrow);
+                                ancY~set_val_at(ancY.at(nrow).set_val_at(col, ncol), nrow);
+                                dp~set_val_at(dp.at(nrow).set_val_at(valA + cost, ncol), nrow);
                             }
                         }
                     }
@@ -104,18 +109,18 @@ forall X -> tuple set_index_var(tuple t, X value, int position) asm "SETINDEXVAR
         int prob = 0;
         int length = 1;
 
-        int cx = anc.at(fx).at(fy).at(0);
-        int cy = anc.at(fx).at(fy).at(1);
-        while((anc.at(cx).at(cy).at(0) != -1) & (anc.at(cx).at(cy).at(1) != -1)){
+        int cx = ancX.at(fx).at(fy);
+        int cy = ancY.at(fx).at(fy);
+        while((ancX.at(cx).at(cy) != -1) & (ancY.at(cx).at(cy) != -1)){
             length = length + 1;
             if(maze.at(cx).at(cy) == 63){
                 prob = prob + 1;
             }
 
-            maze.at(cx).set_index_var(33, cy);
+            maze~set_val_at(maze.at(cx).set_val_at(33, cy), cx);
 
-            int tempcx = anc.at(cx).at(cy).at(0);
-            int tempcy = anc.at(cx).at(cy).at(1);
+            int tempcx = ancX.at(cx).at(cy);
+            int tempcy = ancY.at(cx).at(cy);
             cx = tempcx;
             cy = tempcy;
         }
