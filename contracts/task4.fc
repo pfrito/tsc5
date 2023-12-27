@@ -42,14 +42,15 @@ forall X -> (tuple, ()) ~set_val_at(tuple t, X value, int position) asm "SETINDE
     int fx = 0;
     int fy = 0;
     row = 0;
-    while(row < n){
+    repeat(n){
         int col = 0;
-        while(col < m){
-            if(maze.at(row).at(col) == 83){
+        tuple nextRow = maze.at(row);
+        repeat(m){
+            if(nextRow.at(col) == 83){
                 x = row;
                 y = col;
             }
-            if(maze.at(row).at(col) == 69){
+            if(nextRow.at(col) == 69){
                 fx = row;
                 fy = col;
             }
@@ -65,13 +66,14 @@ forall X -> (tuple, ()) ~set_val_at(tuple t, X value, int position) asm "SETINDE
     repeat(n * m - 1){
         ;; Me muevo por cada posicion de la matriz
         row = 0;
-        while(row < n){
+        repeat(n){
             int col = 0;
-            while(col < m){
+            tuple nextRow = dp.at(row);
+            repeat(m){
                 ;; Intento moverme para todos los vecinos
                 int k = 0;
-                int valA = dp.at(row).at(col);
-                while(k < 8){
+                int valA = nextRow.at(col);
+                repeat(k){
                     int nrow = row + nf.at(k);
                     int ncol = col + nc.at(k);
                     if((nrow >= 0) & (nrow < n) & (ncol >= 0) & (ncol < m)){
