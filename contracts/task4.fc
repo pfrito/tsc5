@@ -87,7 +87,7 @@ forall X -> (tuple, ()) ~set_val_at(tuple t, X value, int position) asm "SETINDE
                             }
                 
                             if(valB > valA + cost){
-                                anc~set_val_at(ancX.at(nrow).set_val_at(pair(row, col), ncol), nrow);
+                                anc~set_val_at(anc.at(nrow).set_val_at(pair(row, col), ncol), nrow);
                                 dp~set_val_at(dp.at(nrow).set_val_at(valA + cost, ncol), nrow);
                             }
                         }
@@ -101,11 +101,12 @@ forall X -> (tuple, ()) ~set_val_at(tuple t, X value, int position) asm "SETINDE
     }
 
     int cntX = 0;
-    int prob = 0;
+    int probability = 0;
     int length = 1;
 
     var (cx, cy) = anc.at(fx).at(fy).unpair();
-    while((anc.at(cx).at(cy).unpair() != (-1, -1))){
+
+    while((cx != x) & (cy != y)){
         length = length + 1;
 
         int ascii_value = maze.at(cx).at(cy);
@@ -113,7 +114,7 @@ forall X -> (tuple, ()) ~set_val_at(tuple t, X value, int position) asm "SETINDE
             cntX = cntX + 1;
         }
         elseif(ascii_value == 63){
-            prob = prob + 1;
+            probability = probability + 1;
         }
 
         maze~set_val_at(maze.at(cx).set_val_at(33, cy), cx);
@@ -121,5 +122,5 @@ forall X -> (tuple, ()) ~set_val_at(tuple t, X value, int position) asm "SETINDE
         (cx, cy) = anc.at(cx).at(cy).unpair();
     }
 
-    return (cntX, prob, length, maze);
+    return (cntX, probability, length, maze);
 }
