@@ -1,11 +1,134 @@
 #include "imports/stdlib.fc";
 
+forall X -> (tuple) to_tuple (X x) asm "NOP";
+forall X -> tuple tpush(tuple t, X value) asm "TPUSH";
+forall X -> tuple set_val_at(tuple t, X value, int position) asm "SETINDEXVAR";
+forall X -> (tuple, ()) ~set_val_at(tuple t, X value, int position) asm "SETINDEXVAR";
+
 () recv_internal(int my_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
 
 }
 
-(int, int, int, tuple) solve(int n, int m, tuple maze) method_id 
-{ 
-    tuple solvedMaze = null(); 
-    return (-1, 0, 0, solvedMaze); 
+(int, int, int, tuple) solve(int n, int m, tuple maze) method_id {   
+    ;; Tupla de adyacentes
+    tuple nf = to_tuple([-1, -1, -1, 0, 0, 1, 1, 1]);
+    tuple nc = to_tuple([-1, 0, 1, -1, 1, -1, 0, 1]);
+
+    ;; Penalizacion x celda
+    int a = 1;
+    int b = 962;
+    int c = 924483;
+    int worstCase = 888428164;
+
+    ;; Inicializar la matriz a modificar y la de ancestros 
+    tuple dp = empty_tuple();
+    tuple ancX = empty_tuple();
+    tuple ancY = empty_tuple();
+    int row = 0;
+    repeat(n){
+        tuple dpNextRow = empty_tuple();
+        tuple ancNextRowX = empty_tuple();
+        tuple ancNextRowY = empty_tuple();
+        repeat(m){
+            dpNextRow~tpush(worstCase);
+            ancNextRowX~tpush(-1);
+            ancNextRowY~tpush(-1);
+        }
+        dp~tpush(dpNextRow);
+        ancX~tpush(ancNextRowX);
+        ancY~tpush(ancNextRowY);
+        row = row + 1;
+    }
+    
+    ;; Buscar la posicion inicial y final
+    int x = 0;
+    int y = 0;
+    int fx = 0;
+    int fy = 0;
+    row = 0;
+    while(row < n){
+        int col = 0;
+        while(col < m){
+            if(maze.at(row).at(col) == 83){
+                x = row;
+                y = col;
+            }
+            if(maze.at(row).at(col) == 69){
+                fx = row;
+                fy = col;
+            }
+            col = col + 1;
+        }
+        row = row + 1;
+    }
+
+    ;; Marcar la posicion inicial con valor 0
+    dp~set_val_at(dp.at(x).set_val_at(0, y), x);
+
+    ;; Hacer el bellman-ford
+    repeat(n * m){
+        ;; Me muevo por cada posicion de la matriz
+        row = 0;
+        while(row < n){
+            int col = 0;
+            while(col < m){
+                ;; Intento moverme para todos los vecinos
+                int k = 0;
+                int valA = dp.at(row).at(col);
+                while(k < 8){
+                    int nrow = row + nf.at(k);
+                    int ncol = col + nc.at(k);
+                    if((nrow >= 0) & (nrow < n) & (ncol >= 0) & (ncol < m)){
+                        int ascii_value = maze.at(nrow).at(ncol);
+                        if(ascii_value != 83){
+                            int valB = dp.at(nrow).at(ncol);
+                            int cost = c;
+                            if((ascii_value == 46) | (ascii_value == 69)){
+                                cost = a;
+                            }
+                            elseif(ascii_value == 63){
+                                cost = b;
+                            }
+                
+                            if(valB > valA + cost){
+                                ancX~set_val_at(ancX.at(nrow).set_val_at(row, ncol), nrow);
+                                ancY~set_val_at(ancY.at(nrow).set_val_at(col, ncol), nrow);
+                                dp~set_val_at(dp.at(nrow).set_val_at(valA + cost, ncol), nrow);
+                            }
+                        }
+                    }
+                    k = k + 1;
+                }
+                col = col + 1;
+            }
+            row = row + 1;
+        }
+    }
+
+    int cntX = 0;
+    int prob = 0;
+    int length = 1;
+
+    int cx = ancX.at(fx).at(fy);
+    int cy = ancY.at(fx).at(fy);
+    while((ancX.at(cx).at(cy) != -1) & (ancY.at(cx).at(cy) != -1)){
+        length = length + 1;
+
+        int ascii_value = maze.at(cx).at(cy);
+        if(ascii_value == 88){
+            cntX = cntX + 1;
+        }
+        elseif(ascii_value == 63){
+            prob = prob + 1;
+        }
+
+        maze~set_val_at(maze.at(cx).set_val_at(33, cy), cx);
+
+        int tempcx = ancX.at(cx).at(cy);
+        int tempcy = ancY.at(cx).at(cy);
+        cx = tempcx;
+        cy = tempcy;
+    }
+
+    return (cntX, prob, length, maze);
 }
