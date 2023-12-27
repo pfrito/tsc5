@@ -73,7 +73,7 @@ forall X -> (tuple, ()) ~set_val_at(tuple t, X value, int position) asm "SETINDE
                 ;; Intento moverme para todos los vecinos
                 int k = 0;
                 int valA = nextRow.at(col);
-                repeat(k){
+                repeat(8){
                     int nrow = row + nf.at(k);
                     int ncol = col + nc.at(k);
                     if((nrow >= 0) & (nrow < n) & (ncol >= 0) & (ncol < m)){
