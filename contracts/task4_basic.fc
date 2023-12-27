@@ -100,5 +100,26 @@ forall X -> tuple set_index_var(tuple t, X value, int position) asm "SETINDEXVAR
     if(dp.at(fx).at(fy) == worstCase){
         return (-1, 0, 0, null());
     }
-    return (0, 0, 0, null());
+    {
+        int prob = 0;
+        int length = 1;
+
+        int cx = anc.at(fx).at(fy).at(0);
+        int cy = anc.at(fx).at(fy).at(1);
+        while((anc.at(cx).at(cy).at(0) != -1) & (anc.at(cx).at(cy).at(1) != -1)){
+            length = length + 1;
+            if(maze.at(cx).at(cy) == 63){
+                prob = prob + 1;
+            }
+
+            maze.at(cx).set_index_var(33, cy);
+
+            int tempcx = anc.at(cx).at(cy).at(0);
+            int tempcy = anc.at(cx).at(cy).at(1);
+            cx = tempcx;
+            cy = tempcy;
+        }
+
+        return (-1, prob, length, maze);
+    }
 }
