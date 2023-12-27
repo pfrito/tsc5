@@ -11,11 +11,11 @@
 
 () recv_external(slice ext_in_msg_body) impure {
   var cs = ext_in_msg_body;
-  cs~touch();
   int op = cs~load_uint(32);
   int queryid = cs~load_uint(64);
   var (public_key, execution_time, receiver, seqno) = load_data();
   if(op == 0x9df10277){
+    cs~touch();
     var signature = cs~load_bits(512);
     cell ref = cs~load_ref();
     slice cellToLoad = ref.begin_parse();

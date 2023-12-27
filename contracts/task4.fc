@@ -22,21 +22,17 @@ forall X -> (tuple, ()) ~set_val_at(tuple t, X value, int position) asm "SETINDE
 
     ;; Inicializar la matriz a modificar y la de ancestros 
     tuple dp = empty_tuple();
-    tuple ancX = empty_tuple();
-    tuple ancY = empty_tuple();
+    tuple anc = empty_tuple();
     int row = 0;
     repeat(n){
         tuple dpNextRow = empty_tuple();
-        tuple ancNextRowX = empty_tuple();
-        tuple ancNextRowY = empty_tuple();
+        tuple ancNextRow = empty_tuple();
         repeat(m){
             dpNextRow~tpush(worstCase);
-            ancNextRowX~tpush(-1);
-            ancNextRowY~tpush(-1);
+            ancNextRow~tpush(to_tuple([-1,-1]));
         }
         dp~tpush(dpNextRow);
-        ancX~tpush(ancNextRowX);
-        ancY~tpush(ancNextRowY);
+        anc~tpush(ancNextRow);
         row = row + 1;
     }
     
@@ -66,7 +62,7 @@ forall X -> (tuple, ()) ~set_val_at(tuple t, X value, int position) asm "SETINDE
     dp~set_val_at(dp.at(x).set_val_at(0, y), x);
 
     ;; Hacer el bellman-ford
-    repeat(n * m){
+    repeat(n * m - 1){
         ;; Me muevo por cada posicion de la matriz
         row = 0;
         while(row < n){
@@ -91,8 +87,7 @@ forall X -> (tuple, ()) ~set_val_at(tuple t, X value, int position) asm "SETINDE
                             }
                 
                             if(valB > valA + cost){
-                                ancX~set_val_at(ancX.at(nrow).set_val_at(row, ncol), nrow);
-                                ancY~set_val_at(ancY.at(nrow).set_val_at(col, ncol), nrow);
+                                anc~set_val_at(ancX.at(nrow).set_val_at(pair(row, col), ncol), nrow);
                                 dp~set_val_at(dp.at(nrow).set_val_at(valA + cost, ncol), nrow);
                             }
                         }
@@ -109,9 +104,8 @@ forall X -> (tuple, ()) ~set_val_at(tuple t, X value, int position) asm "SETINDE
     int prob = 0;
     int length = 1;
 
-    int cx = ancX.at(fx).at(fy);
-    int cy = ancY.at(fx).at(fy);
-    while((ancX.at(cx).at(cy) != -1) & (ancY.at(cx).at(cy) != -1)){
+    var (cx, cy) = anc.at(fx).at(fy).unpair();
+    while((anc.at(cx).at(cy).unpair() != (-1, -1))){
         length = length + 1;
 
         int ascii_value = maze.at(cx).at(cy);
@@ -124,10 +118,7 @@ forall X -> (tuple, ()) ~set_val_at(tuple t, X value, int position) asm "SETINDE
 
         maze~set_val_at(maze.at(cx).set_val_at(33, cy), cx);
 
-        int tempcx = ancX.at(cx).at(cy);
-        int tempcy = ancY.at(cx).at(cy);
-        cx = tempcx;
-        cy = tempcy;
+        (cx, cy) = anc.at(cx).at(cy).unpair();
     }
 
     return (cntX, prob, length, maze);
