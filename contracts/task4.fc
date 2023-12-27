@@ -106,7 +106,7 @@ forall X -> (tuple, ()) ~set_val_at(tuple t, X value, int position) asm "SETINDE
 
     var (cx, cy) = anc.at(fx).at(fy).unpair();
 
-    while((cx != x) & (cy != y)){
+    while((cx != x) | (cy != y)){
         length = length + 1;
 
         int ascii_value = maze.at(cx).at(cy);
