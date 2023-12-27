@@ -36,7 +36,10 @@ forall X -> tuple set_index_var(tuple t, X value, int position) asm "SETINDEXVAR
     }
     
     ;; Buscar la posicion inicial y final
-    int x = y = fx = fy = 0;
+    int x = 0;
+    int y = 0;
+    int fx = 0;
+    int fy = 0;
     row = 0;
     while(row < n){
         int col = 0;
