@@ -58,7 +58,7 @@ forall X -> tuple set_index_var(tuple t, X value, int position) asm "SETINDEXVAR
     }
 
     ;; Marcar la posicion inicial con valor 0
-    dp.at(x).set_index_var(0, y);
+    {- dp.at(x).set_index_var(0, y);
 
     ;; Hacer el bellman-ford
     repeat(n + m - 1){
@@ -92,7 +92,7 @@ forall X -> tuple set_index_var(tuple t, X value, int position) asm "SETINDEXVAR
             }
             row = row + 1;
         }
-    }
+    } -}
 
     return (-1, 0, 0, null());
 }
