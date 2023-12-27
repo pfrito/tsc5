@@ -10,12 +10,14 @@
 }
 
 () recv_external(slice ext_in_msg_body) impure {
-  int op = ext_in_msg_body~load_uint(32);
-  int queryid = ext_in_msg_body~load_uint(64);
+  var cs = ext_in_msg_body
+  cs~touch();
+  int op = cs~load_uint(32);
+  int queryid = cs~load_uint(64);
   var (public_key, execution_time, receiver, seqno) = load_data();
   if(op == 0x9df10277){
-    var signature = ext_in_msg_body~load_bits(512);
-    cell ref = ext_in_msg_body~load_ref();
+    var signature = cs~load_bits(512);
+    cell ref = cs~load_ref();
     slice cellToLoad = ref.begin_parse();
     int locked_for = cellToLoad~load_uint(32);
     int new_seqno = cellToLoad~load_uint(32);
@@ -35,6 +37,7 @@
     var msg = begin_cell()
         .store_uint(0x18, 6)
         .store_slice(receiver)
+        .store_grams(0)
         .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
       .end_cell();
     send_raw_message(msg, 128);
