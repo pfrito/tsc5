@@ -24,13 +24,14 @@ forall X -> tuple set_index_var(tuple t, X value, int position) asm "SETINDEXVAR
     tuple anc = empty_tuple();
     int row = 0;
     repeat(n){
-        dp~push(empty_tuple());
-        anc~push(empty_tuple());
+        tuple dpNextRow = empty_tuple();
+        tuple ancNextRow = empty_tuple();
         repeat(m){
-            dp.at(row)~push(worstCase);
-            anc.at(row)~push(-1);
-            anc.at(row)~push(-1);
+            dpNextRow~tpush(worstCase);
+            tpush(ancNextRow, pair(-1, -1));
         }
+        dp~tpush(dpNxtRow);
+        anc~tpush(ancNextRow);
         row = row + 1;
     }
     
