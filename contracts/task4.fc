@@ -63,7 +63,7 @@ forall X -> (tuple, ()) ~set_val_at(tuple t, X value, int position) asm "SETINDE
     dp~set_val_at(dp.at(x).set_val_at(0, y), x);
 
     ;; Hacer el bellman-ford
-    repeat(n * m * 2 / 3){
+    repeat(n * m / 2 + n + m){
         ;; Me muevo por cada posicion de la matriz
         row = 0;
         repeat(n){
