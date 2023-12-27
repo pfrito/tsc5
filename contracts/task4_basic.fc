@@ -73,18 +73,20 @@ forall X -> tuple set_index_var(tuple t, X value, int position) asm "SETINDEXVAR
                 while(k < 8){
                     int nrow = row + nf.at(k);
                     int ncol = col + nc.at(k);
-                    if((nrow > 0) & (nrow < n) & (ncol > 0) & (ncol < m) & (maze.at(nrow).at(ncol) != 88)){
-                        {- int valB = dp.at(row).at(col);
-                        int cost = b;
-                        if(maze.at(nrow).at(ncol) == 46){
-                            cost = a;
+                    if((nrow > 0) & (nrow < n) & (ncol > 0) & (ncol < m)){
+                        if(maze.at(nrow).at(ncol) != 88){
+                            int valB = dp.at(nrow).at(ncol);
+                            int cost = b;
+                            if(maze.at(nrow).at(ncol) == 46){
+                                cost = a;
+                            }
+                            
+                            if(valB > valA + cost){
+                                anc.at(nrow).at(ncol).set_index_var(row, 0);
+                                anc.at(nrow).at(ncol).set_index_var(col, 1);
+                                dp.at(nrow).set_index_var(valA + cost, ncol);
+                            }
                         }
-                        
-                        if(valB > valA + cost){
-                            anc.at(nrow).at(ncol).set_index_var(row, 0);
-                            anc.at(nrow).at(ncol).set_index_var(col, 1);
-                            dp.at(nrow).set_index_var(valA + cost, ncol);
-                        } -}
                     }
                     k = k + 1;
                 }
