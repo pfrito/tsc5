@@ -30,7 +30,7 @@ forall X -> tuple set_index_var(tuple t, X value, int position) asm "SETINDEXVAR
             dpNextRow~tpush(worstCase);
             tpush(ancNextRow, pair(-1, -1));
         }
-        dp~tpush(dpNxtRow);
+        dp~tpush(dpNextRow);
         anc~tpush(ancNextRow);
         row = row + 1;
     }
@@ -94,5 +94,10 @@ forall X -> tuple set_index_var(tuple t, X value, int position) asm "SETINDEXVAR
         }
     }
 
-    return (-1, 0, 0, null());
+    if(dp.ar(fx).at(fy) == worstCase){
+        return (-1, 0, 0, null());
+    }
+    else{
+        return (0, 0, 0, null());
+    }
 }
