@@ -58,7 +58,7 @@ forall X -> tuple set_index_var(tuple t, X value, int position) asm "SETINDEXVAR
     }
 
     ;; Marcar la posicion inicial con valor 0
-    {- dp.at(x).set_index_var(0, y);
+    dp.at(x).set_index_var(0, y);
 
     ;; Hacer el bellman-ford
     repeat(n + m - 1){
@@ -70,7 +70,7 @@ forall X -> tuple set_index_var(tuple t, X value, int position) asm "SETINDEXVAR
                 ;; Intento moverme para todos los vecinos
                 int k = 0;
                 int valA = dp.at(row).at(col);
-                while(k < 8){
+                {- while(k < 8){
                     int nrow = row + nf.at(k);
                     int ncol = col + nc.at(k);
                     if((nrow > 0) & (nrow < n) & (ncol > 0) & (ncol < m) & (maze.at(nrow).at(ncol) != 88)){
@@ -87,12 +87,12 @@ forall X -> tuple set_index_var(tuple t, X value, int position) asm "SETINDEXVAR
                         }
                     }
                     k = k + 1;
-                }
+                } -}
                 col = col + 1;
             }
             row = row + 1;
         }
-    } -}
+    }
 
     return (-1, 0, 0, null());
 }
