@@ -61,7 +61,7 @@ forall X -> tuple set_index_var(tuple t, X value, int position) asm "SETINDEXVAR
     dp.at(x).set_index_var(0, y);
 
     ;; Hacer el bellman-ford
-    repeat(n + m - 1){
+    repeat(n * m){
         ;; Me muevo por cada posicion de la matriz
         row = 0;
         while(row < n){
