@@ -97,7 +97,4 @@ forall X -> tuple set_index_var(tuple t, X value, int position) asm "SETINDEXVAR
     if(dp.ar(fx).at(fy) == worstCase){
         return (-1, 0, 0, null());
     }
-    else{
-        return (-1, 0, 0, null());
-    }
 }
