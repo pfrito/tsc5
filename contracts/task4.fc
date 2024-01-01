@@ -4,6 +4,7 @@ forall X -> (tuple) to_tuple (X x) asm "NOP";
 forall X -> tuple tpush(tuple t, X value) asm "TPUSH";
 forall X -> tuple set_val_at(tuple t, X value, int position) asm "SETINDEXVAR";
 forall X -> (tuple, ()) ~set_val_at(tuple t, X value, int position) asm "SETINDEXVAR";
+forall X, Y -> X pair_first([X, Y] p) asm "FIRST";
 
 () recv_internal(int my_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
 
@@ -16,9 +17,9 @@ forall X -> (tuple, ()) ~set_val_at(tuple t, X value, int position) asm "SETINDE
 
     ;; Penalizacion x celda
     int a = 1;
-    int b = 962;
-    int c = 924483;
-    int worstCase = 888428164;
+    int b = 1000;
+    int c = 1000000;
+    int worstCase = 1000000000;
 
     ;; Inicializar la matriz a modificar y la de ancestros 
     tuple dp = empty_tuple();
@@ -80,21 +81,22 @@ forall X -> (tuple, ()) ~set_val_at(tuple t, X value, int position) asm "SETINDE
                     int ncol = col + nc.at(k);
                     if((nrow >= 0) & (nrow < n) & (ncol >= 0) & (ncol < m)){
                         int ascii_value = maze.at(nrow).at(ncol);
-                        if(ascii_value != 83){
-                            int valB = dp.at(nrow).at(ncol);
-                            int cost = c;
-                            if((ascii_value == 46) | (ascii_value == 69)){
-                                cost = a;
-                            }
-                            elseif(ascii_value == 63){
-                                cost = b;
-                            }
-                
-                            if(valB > valA + cost){
-                                updates = updates + 1;
-                                anc~set_val_at(anc.at(nrow).set_val_at(pair(row, col), ncol), nrow);
-                                dp~set_val_at(dp.at(nrow).set_val_at(valA + cost, ncol), nrow);
-                            }
+                        int valB = dp.at(nrow).at(ncol);
+                        int cost = 0;
+                        if((ascii_value == 46) | (ascii_value == 69) | (ascii_value == 83)){
+                            cost = a;
+                        }
+                        elseif(ascii_value == 63){
+                            cost = b;
+                        }
+                        else {
+                            cost = c;
+                        }
+
+                        if(valB > valA + cost){
+                            updates = updates + 1;
+                            anc~set_val_at(anc.at(nrow).set_val_at(pair(row, col), ncol), nrow);
+                            dp~set_val_at(dp.at(nrow).set_val_at(valA + cost, ncol), nrow);
                         }
                     }
                     k = k + 1;
@@ -110,11 +112,11 @@ forall X -> (tuple, ()) ~set_val_at(tuple t, X value, int position) asm "SETINDE
 
     int cntX = 0;
     int probability = 0;
-    int length = 1;
+    int length = 0;
 
     var (cx, cy) = anc.at(fx).at(fy).unpair();
 
-    while((cx != x) | (cy != y)){
+    while(anc.at(cx).at(cy).pair_first() != -1){
         length = length + 1;
 
         int ascii_value = maze.at(cx).at(cy);
@@ -130,5 +132,5 @@ forall X -> (tuple, ()) ~set_val_at(tuple t, X value, int position) asm "SETINDE
         (cx, cy) = anc.at(cx).at(cy).unpair();
     }
 
-    return (cntX, probability, length, maze);
+    return (cntX, probability, length + 1, maze);
 }
