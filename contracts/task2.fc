@@ -19,13 +19,14 @@ slice slice_last(slice s, int len) asm "SDCUTLAST";
 
     if(op == 0x368ddef3){
         (slice address, int share) = (in_msg_body~load_msg_addr(), in_msg_body~load_uint(32));
-        throw_if(120, adminAddress.load_int(256) != senderAddress.load_int(256));
+        throw_if(120, adminAddress~load_int(256) != senderAddress~load_int(256));
     }
     elseif(op == 0x278205c8){
         slice address = in_msg_body~load_msg_addr().slice_last(256);
-        throw_if(120, adminAddress.load_int(256) != senderAddress.load_int(256));
+        int accountId = address~load_int(256);
+        throw_if(120, accountId != senderAddress~load_int(256));
 
-        (slice val, int key) = users.udict_get?(256, address.load_int(256));
+        (slice val, int key) = users.udict_get?(256, accountId);
 
         ;; throw_if(121, val.slice_empty?());
     }
