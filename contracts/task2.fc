@@ -1,5 +1,24 @@
 #include "imports/stdlib.fc";
 
+slice slice_last(slice s, int len) asm "SDCUTLAST";
+
 () recv_internal(int my_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
 
+}
+
+int get_users() method_id {
+    var store = get_data().begin_parse();
+    
+    (slice adminAddress, cell users) = (store~load_msg_addr(), store~load_dict());
+    
+    return users;
+}
+
+int get_user_share(slice user_address) method_id {
+    int accountId = slice_last(user_address, 256);
+    cell users = get_users();
+
+    (slice val, int key) = users.udict_get?(256, accountId);
+    
+    return val~load_uint(32);
 }
