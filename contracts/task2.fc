@@ -35,7 +35,7 @@ int get_user_share(slice user_address) method_id {
 
     int op = in_msg_body~load_uint(32);
     int queryId = in_msg_body~load_uint(64);
-    cell users = get_users();
+    cell users = new_dict();
     slice adminAddress = store~load_msg_addr();
     slice senderAddress = ms~load_msg_addr();
 
