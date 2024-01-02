@@ -35,21 +35,21 @@ int get_user_share(slice user_address) method_id {
 
     int op = in_msg_body~load_uint(32);
     int queryId = in_msg_body~load_uint(64);
-    cell users = new_dict();
+    cell users = get_users();
     slice adminAddress = store~load_msg_addr();
     slice senderAddress = ms~load_msg_addr();
 
     if(op == 0x368ddef3){
-        ;; throw_unless(120, equal_slices?(adminAddress, senderAddress));
+        throw_unless(120, equal_slices?(adminAddress, senderAddress));
 
-        {- (slice address, int share) = (in_msg_body~load_msg_addr(), in_msg_body~load_uint(32));
+        (slice address, int share) = (in_msg_body~load_msg_addr().slice_last(256), in_msg_body~load_uint(32));
         int accountId = address~load_int(256);
         users~udict_set(256, accountId, begin_cell().store_uint(share, 32).end_cell().begin_parse());
 
-        update_users(users); -}
+        update_users(users);
     }
     elseif(op == 0x278205c8){
-        throw_unless(120, equal_slices?(adminAddress, senderAddress));
+        ;; throw_unless(120, equal_slices?(adminAddress, senderAddress));
         
         {- slice address = in_msg_body~load_msg_addr().slice_last(256);
         int accountId = address~load_int(256);
