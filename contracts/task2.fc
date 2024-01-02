@@ -3,23 +3,47 @@
 slice slice_last(slice s, int len) asm "SDCUTLAST";
 
 () recv_internal(int my_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
+    var store = get_data().begin_parse();
+    var ms = in_msg_full.begin_parse();
+    ms~load_uint(4);
 
+    int op = in_msg_body~load_uint(32);
+    int queryId = in_msg_body~load_uint(64);
+    cell users = get_users();
+    slice adminAddress = store~load_msg_addr().slice_last(256);
+    slice senderAddress = ms~load_msg_addr().slice_last(256);
+
+    if(op == 0x368ddef3){
+        (slice address, int share) = (in_msg_body~load_msg_addr(), in_msg_body~load_uint(32));
+        throw_if(120, adminAddress~load_int(256) != senderAddress~load_int(256));
+    }
+    elseif(op == 0x278205c8){
+        slice address = in_msg_body~load_msg_addr().slice_last(256);
+        throw_if(120, adminAddress~load_int(256) != senderAddress~load_int(256));
+
+        (slice val, int key) = users.udict_get?(256, address~load_int(256));
+
+        throw_if(121, val.slice_empty?());
+    }
+    elseif(op == 0x068530b3){
+        throw_if(122, users.dict_empty?());
+    }
+    else {
+        throw_if(122, users.dict_empty?());
+    }
 }
 
 cell get_users() method_id {
     var store = get_data().begin_parse();
-    
     (slice adminAddress, cell users) = (store~load_msg_addr(), store~load_dict());
     
     return users;
 }
 
 int get_user_share(slice user_address) method_id {
-    slice sliceAccountId = slice_last(user_address, 256);
-    int accountId = sliceAccountId~load_int(256);
+    slice userAddress = slice_last(user_address, 256);
     cell users = get_users();
-
-    (slice val, int key) = users.udict_get?(256, accountId);
+    (slice val, int key) = users.udict_get?(256, userAddress~load_int(256));
 
     return val~load_uint(32);
 }
