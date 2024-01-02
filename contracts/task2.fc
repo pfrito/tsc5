@@ -3,6 +3,10 @@
 slice slice_last(slice s, int len) asm "SDCUTLAST";
 
 () recv_internal(int my_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
+    if(in_msg_body.slice_empty?()){
+        return ();
+    }
+    
     var store = get_data().begin_parse();
     var ms = in_msg_full.begin_parse();
     ms~load_uint(4);
