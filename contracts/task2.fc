@@ -29,12 +29,12 @@ slice slice_last(slice s, int len) asm "SDCUTLAST";
 
         throw_if(121, val.slice_empty?());
     }
-    elseif(op == 0x068530b3){
+    {- elseif(op == 0x068530b3){
         throw_if(122, users.dict_empty?());
     }
     else {
         throw_if(122, users.dict_empty?());
-    }
+    } -}
 }
 
 cell get_users() method_id {
