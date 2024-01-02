@@ -65,7 +65,7 @@ forall X, Y -> X pair_first([X, Y] p) asm "FIRST";
 
     ;; Hacer el bellman-ford
     int no_update = 0;
-    repeat((n * m) & (no_update == 0)){
+    while(no_update == 0){
         ;; Me muevo por cada posicion de la matriz
         row = 0;
         int updates = 0;
