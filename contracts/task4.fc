@@ -17,9 +17,9 @@ forall X, Y -> X pair_first([X, Y] p) asm "FIRST";
 
     ;; Penalizacion x celda
     int a = 1;
-    int b = 1000;
-    int c = 1000000;
-    int worstCase = 1000000000;
+    int b = 962;
+    int c = 924483;
+    int worstCase = 888428164;
 
     ;; Inicializar la matriz a modificar y la de ancestros 
     tuple dp = empty_tuple();
