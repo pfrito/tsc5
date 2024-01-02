@@ -3,6 +3,21 @@
 int equal_slices?(slice a, slice b) asm "SDEQ";
 slice slice_last(slice s, int len) asm "SDCUTLAST";
 
+cell get_users() method_id {
+    var store = get_data().begin_parse();
+    (slice adminAddress, cell users) = (store~load_msg_addr(), store~load_dict());
+    
+    return users;
+}
+
+int get_user_share(slice user_address) method_id {
+    slice userAddress = slice_last(user_address, 256);
+    cell users = get_users();
+    (slice val, int key) = users.udict_get?(256, userAddress~load_int(256));
+
+    return val~load_uint(32);
+}
+
 () update_users (cell users){
     var store = get_data().begin_parse();
     var adminAddress = store~load_msg_addr();
@@ -52,19 +67,4 @@ slice slice_last(slice s, int len) asm "SDCUTLAST";
     else {
         throw_if(122, users.dict_empty?());
     } -}
-}
-
-cell get_users() method_id {
-    var store = get_data().begin_parse();
-    (slice adminAddress, cell users) = (store~load_msg_addr(), store~load_dict());
-    
-    return users;
-}
-
-int get_user_share(slice user_address) method_id {
-    slice userAddress = slice_last(user_address, 256);
-    cell users = get_users();
-    (slice val, int key) = users.udict_get?(256, userAddress~load_int(256));
-
-    return val~load_uint(32);
 }
