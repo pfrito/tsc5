@@ -2,6 +2,12 @@
 
 slice slice_last(slice s, int len) asm "SDCUTLAST";
 
+() update_users (cell users){
+    var store = get_data().begin_parse();
+    var adminAddress = store~load_msg_addr();
+    set_data(begin_cell().store_slice(adminAddress).store_dict(users).end_cell());
+}
+
 () recv_internal(int my_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
     if(in_msg_body.slice_empty?()){
         return ();
@@ -19,7 +25,12 @@ slice slice_last(slice s, int len) asm "SDCUTLAST";
 
     if(op == 0x368ddef3){
         (slice address, int share) = (in_msg_body~load_msg_addr(), in_msg_body~load_uint(32));
+        int accountId = address~load_int(256);
         throw_if(120, adminAddress~load_int(256) != senderAddress~load_int(256));
+
+        users~udict_set(256, accountId, begin_cell().store_uint(share, 32).end_cell().begin_parse());
+
+        update_users(users);
     }
     elseif(op == 0x278205c8){
         slice address = in_msg_body~load_msg_addr().slice_last(256);
@@ -28,7 +39,11 @@ slice slice_last(slice s, int len) asm "SDCUTLAST";
 
         (slice val, int key) = users.udict_get?(256, accountId);
 
-        ;; throw_if(121, val.slice_empty?());
+        throw_if(121, val.slice_empty?());
+
+        users~udict_delete?(256, accountId);
+
+        update_users(users);
     }
     {- elseif(op == 0x068530b3){
         throw_if(122, users.dict_empty?());
