@@ -10,13 +10,13 @@ cell get_users() method_id {
     return users;
 }
 
-int get_user_share(slice user_address) method_id {
+{- int get_user_share(slice user_address) method_id {
     slice userAddress = slice_last(user_address, 256);
     cell users = get_users();
     (slice val, int key) = users.udict_get?(256, userAddress~load_int(256));
 
     return val~load_uint(32);
-}
+} -}
 
 int get_total_share() method_id {
     int total_share = 0;
@@ -69,7 +69,7 @@ int get_total_share() method_id {
     elseif(op == 0x068530b3){
         throw_if(122, users.dict_empty?());
 
-        {- int totalShare = get_total_share();
+        int totalShare = get_total_share();
         var (key, val, flag) = users.udict_get_min?(256);
         while (flag) {
             slice recipientAddress = begin_cell().store_uint(0x400, 11).store_uint(key, 256).end_cell().begin_parse();
@@ -83,7 +83,7 @@ int get_total_share() method_id {
             (key, val, flag) = users.udict_get_next?(256, key);
             
             send_raw_message(message, 1);
-        } -}
+        }
     }
     else {
         throw_if(122, users.dict_empty?());
