@@ -18,7 +18,7 @@ int get_user_share(slice user_address) method_id {
     return val~load_uint(32);
 }
 
-() update_users(slice adminAdress, cell users){
+() update_users(slice adminAddress, cell users){
     set_data(begin_cell().store_slice(adminAddress).store_dict(users).end_cell());
 }
 
@@ -59,10 +59,10 @@ int get_user_share(slice user_address) method_id {
 
         update_users(adminAddress, users);
     }
-    {- elseif(op == 0x068530b3){
+    elseif(op == 0x068530b3){
         throw_if(122, users.dict_empty?());
     }
     else {
         throw_if(122, users.dict_empty?());
-    } -}
+    }
 }
