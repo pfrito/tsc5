@@ -59,9 +59,9 @@ int get_total_share() method_id {
         
         slice address = in_msg_body~load_msg_addr().slice_last(256);
         int accountId = address~load_uint(256);
-        (slice val, int key) = users.udict_get?(256, accountId);
+        (slice key, int flag) = users.udict_get?(256, accountId);
 
-        {- throw_if(121, val.slice_empty?()); -}
+        throw_unless(121, flag);
 
         users~udict_delete?(256, accountId);
 
