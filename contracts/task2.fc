@@ -18,7 +18,7 @@ int get_user_share(slice user_address) method_id {
     return val~load_uint(32);
 }
 
-int get_total_share() inline {
+int get_total_share() method_id {
     int total_share = 0;
     cell users = get_users();
     var (key, val, flag) = users.udict_get_min?(256);
@@ -29,7 +29,7 @@ int get_total_share() inline {
     return total_share;
 }
 
-() update_users(slice adminAddress, cell users) inline {
+() update_users(slice adminAddress, cell users) method_id {
     set_data(begin_cell().store_slice(adminAddress).store_dict(users).end_cell());
 }
 
