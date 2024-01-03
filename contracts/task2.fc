@@ -85,7 +85,7 @@ int get_total_share() method_id {
             send_raw_message(message, 1);
         }
     }
-    elseif(op == 0x068530b3){
+    elseif(op == 0x7362d09c){
         throw_if(122, users.dict_empty?());
 
         int amount = in_msg_body~load_coins();
