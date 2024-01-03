@@ -49,9 +49,9 @@ int get_user_share(slice user_address) method_id {
         update_users(users);
     }
     elseif(op == 0x278205c8){
-        ;; throw_unless(120, equal_slices?(adminAddress, senderAddress));
+        throw_unless(120, equal_slices?(adminAddress, senderAddress));
         
-        {- slice address = in_msg_body~load_msg_addr().slice_last(256);
+        slice address = in_msg_body~load_msg_addr().slice_last(256);
         int accountId = address~load_int(256);
         (slice val, int key) = users.udict_get?(256, accountId);
 
@@ -59,7 +59,7 @@ int get_user_share(slice user_address) method_id {
 
         users~udict_delete?(256, accountId);
 
-        update_users(users); -}
+        update_users(users);
     }
     {- elseif(op == 0x068530b3){
         throw_if(122, users.dict_empty?());
