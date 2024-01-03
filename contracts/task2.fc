@@ -29,10 +29,6 @@ int get_total_share() method_id {
     return total_share;
 }
 
-() update_users(slice adminAddress, cell users) method_id {
-    set_data(begin_cell().store_slice(adminAddress).store_dict(users).end_cell());
-}
-
 () recv_internal(int my_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
     if(in_msg_body.slice_empty?()){
         return ();
@@ -55,7 +51,7 @@ int get_total_share() method_id {
         int accountId = address~load_uint(256);
         users~udict_set(256, accountId, begin_cell().store_uint(share, 32).end_cell().begin_parse());
 
-        update_users(adminAddress, users);
+        set_data(begin_cell().store_slice(adminAddress).store_dict(users).end_cell());
     }
     elseif(op == 0x278205c8){
         throw_unless(120, equal_slices?(adminAddress, senderAddress));
@@ -68,7 +64,7 @@ int get_total_share() method_id {
 
         users~udict_delete?(256, accountId);
 
-        update_users(adminAddress, users);
+        set_data(begin_cell().store_slice(adminAddress).store_dict(users).end_cell());
     }
     elseif(op == 0x068530b3){
         throw_if(122, users.dict_empty?());
@@ -91,5 +87,35 @@ int get_total_share() method_id {
     }
     else {
         throw_if(122, users.dict_empty?());
+
+        int totalShare = get_total_share();
+
+        (int key, slice val, int flag) = users.udict_get_min?(256);
+        while (flag) {
+            slice address = begin_cell().store_uint(0x400, 11).store_uint(key, 256).end_cell().begin_parse();
+
+            cell body = begin_cell()
+                .store_uint(0x0f8a7ea5, 32)
+                .store_uint(queryId, 64)
+                .store_coins(val~load_uint(32) * amount / share_sum)
+                .store_slice(address)
+                .store_slice(address)
+                .store_uint(0, 1)
+                .store_coins(1)
+                .store_uint(0, 1)
+            .end_cell();
+
+            cell message = begin_cell()
+                .store_uint(0x18, 6)
+                .store_slice(sender_address)
+                .store_coins(20000000)
+                .store_uint(1, 107)
+                .store_ref(body)
+            .end_cell();
+
+            send_raw_message(message, 0);
+            
+            (key, val, flag) = users.udict_get_next?(256, key);
+        }
     }
 }
