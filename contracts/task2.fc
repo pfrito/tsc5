@@ -61,7 +61,7 @@ int get_total_share() method_id {
         int accountId = address~load_uint(256);
         (slice val, int key) = users.udict_get?(256, accountId);
 
-        throw_if(121, val.slice_empty?());
+        {- throw_if(121, val.slice_empty?()); -}
 
         users~udict_delete?(256, accountId);
 
