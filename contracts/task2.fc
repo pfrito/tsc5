@@ -18,7 +18,7 @@ int get_user_share(slice user_address) method_id {
     return val~load_uint(32);
 }
 
-() update_users (cell users){
+() update_users(cell users){
     var store = get_data().begin_parse();
     var adminAddress = store~load_msg_addr();
     set_data(begin_cell().store_slice(adminAddress).store_dict(users).end_cell());
@@ -46,7 +46,8 @@ int get_user_share(slice user_address) method_id {
         int accountId = address~load_uint(256);
         users~udict_set(256, accountId, begin_cell().store_uint(share, 32).end_cell().begin_parse());
 
-        set_data(begin_cell().store_slice(adminAddress).store_dict(users).end_cell());    }
+        update_users(users);
+    }
     elseif(op == 0x278205c8){
         ;; throw_unless(120, equal_slices?(adminAddress, senderAddress));
         
