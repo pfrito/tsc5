@@ -46,7 +46,7 @@ int get_user_share(slice user_address) method_id {
         (int workchainId, int accountId) = parse_std_addr(address);
         users~udict_set(256, accountId, begin_cell().store_uint(share, 32).end_cell().begin_parse());
 
-        update_users(users);
+        set_data(begin_cell().store_slice(adminAddress).store_dict(users).end_cell());
     }
     elseif(op == 0x278205c8){
         ;; throw_unless(120, equal_slices?(adminAddress, senderAddress));
