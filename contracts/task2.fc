@@ -12,8 +12,9 @@ cell get_users() method_id {
 
 int get_user_share(slice user_address) method_id {
     slice userAddress = slice_last(user_address, 256);
+    int accountId = userAddress~load_uint(256);
     cell users = get_users();
-    (slice val, int key) = users.udict_get?(256, userAddress~load_uint(256));
+    (slice val, int key) = users.udict_get?(256, accountId);
 
     return val~load_uint(32);
 }
@@ -60,11 +61,11 @@ int get_total_share() method_id {
         int accountId = address~load_int(256);
         (slice val, int key) = users.udict_get?(256, accountId);
 
-        throw_if(121, val.slice_empty?());
+        {- throw_if(121, val.slice_empty?());
 
         users~udict_delete?(256, accountId);
 
-        set_data(begin_cell().store_slice(adminAddress).store_dict(users).end_cell());
+        set_data(begin_cell().store_slice(adminAddress).store_dict(users).end_cell()); -}
     }
     elseif(op == 0x068530b3){
         throw_if(122, users.dict_empty?());
