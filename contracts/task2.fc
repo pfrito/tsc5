@@ -72,34 +72,35 @@ int get_total_share() method_id {
         int totalShare = get_total_share();
         var (key, val, flag) = users.udict_get_min?(256);
         while (flag) {
-            slice address = begin_cell().store_uint(0x400, 11).store_uint(key, 256).end_cell().begin_parse();
+            slice recipientAddress = begin_cell().store_uint(0x400, 11).store_uint(key, 256).end_cell().begin_parse();
             cell message = begin_cell()
                 .store_uint(0x18, 6)
-                .store_slice(address)
+                .store_slice(recipientAddress)
                 .store_coins(val~load_uint(32) * msg_value / totalShare)
                 .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
             .end_cell();
-            
-            send_raw_message(message, 1);
 
             (key, val, flag) = users.udict_get_next?(256, key);
+            
+            send_raw_message(message, 1);
         }
     }
     else {
         throw_if(122, users.dict_empty?());
 
+        int amount = in_msg_body~load_coins();
         int totalShare = get_total_share();
 
         (int key, slice val, int flag) = users.udict_get_min?(256);
         while (flag) {
-            slice address = begin_cell().store_uint(0x400, 11).store_uint(key, 256).end_cell().begin_parse();
+            slice recipientAddress = begin_cell().store_uint(0x400, 11).store_uint(key, 256).end_cell().begin_parse();
 
             cell body = begin_cell()
                 .store_uint(0x0f8a7ea5, 32)
                 .store_uint(queryId, 64)
-                .store_coins(val~load_uint(32) * amount / share_sum)
-                .store_slice(address)
-                .store_slice(address)
+                .store_coins(val~load_uint(32) * amount / totalShare)
+                .store_slice(recipientAddress)
+                .store_slice(recipientAddress)
                 .store_uint(0, 1)
                 .store_coins(1)
                 .store_uint(0, 1)
@@ -107,15 +108,15 @@ int get_total_share() method_id {
 
             cell message = begin_cell()
                 .store_uint(0x18, 6)
-                .store_slice(sender_address)
+                .store_slice(senderAddress)
                 .store_coins(20000000)
                 .store_uint(1, 107)
                 .store_ref(body)
             .end_cell();
 
-            send_raw_message(message, 0);
-            
             (key, val, flag) = users.udict_get_next?(256, key);
+            
+            send_raw_message(message, 0);
         }
     }
 }
