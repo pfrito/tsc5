@@ -55,11 +55,11 @@ int get_total_share() method_id {
         set_data(begin_cell().store_slice(adminAddress).store_dict(users).end_cell());
     }
     elseif(op == 0x278205c8){
-        throw_unless(120, equal_slices?(adminAddress, senderAddress));
+        {- throw_unless(120, equal_slices?(adminAddress, senderAddress));
         
         slice address = in_msg_body~load_msg_addr().slice_last(256);
         int accountId = address~load_int(256);
-        (slice val, int key) = users.udict_get?(256, accountId);
+        (slice val, int key) = users.udict_get?(256, accountId); -}
 
         {- throw_if(121, val.slice_empty?());
 
