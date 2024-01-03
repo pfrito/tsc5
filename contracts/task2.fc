@@ -10,13 +10,13 @@ cell get_users() method_id {
     return users;
 }
 
-{- int get_user_share(slice user_address) method_id {
+int get_user_share(slice user_address) method_id {
     slice userAddress = slice_last(user_address, 256);
     cell users = get_users();
-    (slice val, int key) = users.udict_get?(256, userAddress~load_int(256));
+    (slice val, int key) = users.udict_get?(256, userAddress~load_uint(256));
 
     return val~load_uint(32);
-} -}
+}
 
 int get_total_share() method_id {
     int total_share = 0;
