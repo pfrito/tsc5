@@ -20,7 +20,7 @@ int get_user_share(slice user_address) method_id {
 
 int get_total_share() inline {
     int total_share = 0;
-    users = get_users();
+    cell users = get_users();
     var (key, val, flag) = users.udict_get_min?(256);
     while (flag) {
         total_share = total_share + val~load_uint(32);
