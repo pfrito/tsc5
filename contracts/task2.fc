@@ -55,17 +55,17 @@ int get_total_share() method_id {
         set_data(begin_cell().store_slice(adminAddress).store_dict(users).end_cell());
     }
     elseif(op == 0x278205c8){
-        {- throw_unless(120, equal_slices?(adminAddress, senderAddress));
+        throw_unless(120, equal_slices?(adminAddress, senderAddress));
         
         slice address = in_msg_body~load_msg_addr().slice_last(256);
-        int accountId = address~load_int(256);
-        (slice val, int key) = users.udict_get?(256, accountId); -}
+        int accountId = address~load_uint(256);
+        (slice val, int key) = users.udict_get?(256, accountId);
 
-        {- throw_if(121, val.slice_empty?());
+        throw_if(121, val.slice_empty?());
 
         users~udict_delete?(256, accountId);
 
-        set_data(begin_cell().store_slice(adminAddress).store_dict(users).end_cell()); -}
+        set_data(begin_cell().store_slice(adminAddress).store_dict(users).end_cell());
     }
     elseif(op == 0x068530b3){
         throw_if(122, users.dict_empty?());
