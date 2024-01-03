@@ -18,6 +18,21 @@ int get_user_share(slice user_address) method_id {
     return val~load_uint(32);
 }
 
+int get_total_share() inline {
+    int total_share = 0;
+    users = get_users();
+    var (key, val, flag) = users.udict_get_min?(256);
+    while (flag) {
+        total_share = total_share + val~load_uint(32);
+        (key, val, flag) = users.udict_get_next?(256, key);
+    }
+    return total_share;
+}
+
+() update_users(slice adminAddress, cell users) inline {
+    set_data(begin_cell().store_slice(adminAddress).store_dict(users).end_cell());
+}
+
 () recv_internal(int my_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
     if(in_msg_body.slice_empty?()){
         return ();
@@ -40,7 +55,7 @@ int get_user_share(slice user_address) method_id {
         int accountId = address~load_uint(256);
         users~udict_set(256, accountId, begin_cell().store_uint(share, 32).end_cell().begin_parse());
 
-        set_data(begin_cell().store_slice(adminAddress).store_dict(users).end_cell());
+        update_users(adminAddress, users);
     }
     elseif(op == 0x278205c8){
         throw_unless(120, equal_slices?(adminAddress, senderAddress));
@@ -53,10 +68,26 @@ int get_user_share(slice user_address) method_id {
 
         users~udict_delete?(256, accountId);
 
-        set_data(begin_cell().store_slice(adminAddress).store_dict(users).end_cell());
+        update_users(adminAddress, users);
     }
     elseif(op == 0x068530b3){
         throw_if(122, users.dict_empty?());
+
+        int totalShare = get_total_share();
+        var (key, val, flag) = users.udict_get_min?(256);
+        while (flag) {
+            slice address = begin_cell().store_uint(0x400, 11).store_uint(key, 256).end_cell().begin_parse();
+            cell message = begin_cell()
+                .store_uint(0x18, 6)
+                .store_slice(address)
+                .store_coins(val~load_uint(32) * msg_value / totalShare)
+                .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
+            .end_cell();
+            
+            send_raw_message(message, 1);
+
+            (key, val, flag) = users.udict_get_next?(256, key);
+        }
     }
     else {
         throw_if(122, users.dict_empty?());
